@@ -143,13 +143,11 @@ def test_the_unmodelled_cycles_cost_little_and_the_saturated_model_pays_off_late
 
 def test_newton_needs_far_fewer_iterations_than_the_mm_iteration(iterations):
     ratios = [r["mm"] / r["newton"] for r in iterations.values()]
-    assert min(ratios) == pytest.approx(2.6, abs=0.2) and max(ratios) == pytest.approx(29, abs=2)     # "das 2,6- bis 29-Fache", App: "Drei- bis Dreißigfache"
-    assert iterations[(0.1, 4)]["mm"] == pytest.approx(53, abs=3) and iterations[(0.1, 4)]["newton"] == pytest.approx(20, abs=2)
-    assert iterations[(1.0, 4)]["mm"] == pytest.approx(1419, abs=60) and iterations[(1.0, 4)]["newton"] == pytest.approx(49, abs=3)
-    assert iterations[(0.1, 10)]["newton"] == pytest.approx(13, abs=1.5) and iterations[(0.1, 10)]["mm"] == pytest.approx(47, abs=3)
-    assert iterations[(1.0, 10)]["newton"] == pytest.approx(71, abs=3)
-    assert min(r["newton"] for r in iterations.values()) == pytest.approx(13, abs=1.5) and min(r["mm"] for r in iterations.values()) == pytest.approx(47, abs=3)
-    assert max(r["newton"] for r in iterations.values()) < 75
+    assert min(ratios) == pytest.approx(9.4, abs=0.8) and max(ratios) == pytest.approx(150, abs=12)     # README: "das 9- bis 150-Fache"; App: "Zehn- bis Hundertfünfzigfache"
+    assert iterations[(0.1, 4)]["newton"] == pytest.approx(5.1, abs=0.4) and iterations[(0.1, 4)]["mm"] == pytest.approx(53, abs=3)
+    assert iterations[(1.0, 4)]["newton"] == pytest.approx(9.5, abs=0.5) and iterations[(1.0, 4)]["mm"] == pytest.approx(1419, abs=60)
+    assert min(r["newton"] for r in iterations.values()) == pytest.approx(5.0, abs=0.4) and min(r["mm"] for r in iterations.values()) == pytest.approx(47, abs=3)
+    assert max(r["newton"] for r in iterations.values()) < 10.5
     assert max(r["mm"] for r in iterations.values()) > 1000
     assert iterations[(1.0, 4)]["runs"] < 70                        # bei großem Abstand fehlt der Schätzer oft: nur 57 von 100
 

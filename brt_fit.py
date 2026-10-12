@@ -87,6 +87,9 @@ def fit_penalized(W, lam: float, max_iter: int = 200, tol: float = 1e-10) -> Fit
     for it in range(1, max_iter + 1):
         g = gradient(theta, W, lam)
         step = np.linalg.solve(fisher_information(theta, W) + lam * np.eye(n), g)
+        # Der exakte Schritt hat Mittelwert 0 (die Gradientensumme ist −λ Σθ = 0). Rundungsrauschen in der Richtung „alle gleich“ würde durch 1/λ verstärkt,
+        # die Schrittzahl wäre dann plattformabhängig; die Projektion ändert die Lösung nicht.
+        step = step - step.mean()
         t = 1.0
         while True:
             cand = theta + t * step

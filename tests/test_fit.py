@@ -138,6 +138,26 @@ def test_mm_agrees_with_newton_where_the_estimator_exists_and_stops_where_it_doe
     assert F.fit_mm(cycle3)[0] == pytest.approx([0.0, 0.0, 0.0], abs=1e-8)
 
 
+def test_newton_steps_stay_few_even_for_a_vanishing_prior():
+    # Ohne zentrierten Schritt verstärkt 1/λ das Rundungsrauschen in der Richtung „alle gleich“: dann sind es im Mittel 20 und bis zu 100 Schritte,
+    # plattformabhängig (Linux 18, Windows 20). Mit Zentrierung bleibt es bei höchstens 12.
+    rnd = random.Random(8)
+    seen = 0
+    for _ in range(60):
+        n = rnd.randint(4, 8)
+        W = np.zeros((n, n), dtype=int)
+        for i in range(n):
+            for j in range(i + 1, n):
+                w = sum(rnd.random() < 0.5 for _ in range(4))
+                W[i, j], W[j, i] = w, 4 - w
+        fit = F.fit_penalized(W, 1e-8)
+        if min(W.sum(axis=1)) == 0 or min(W.sum(axis=0)) == 0:
+            continue
+        assert fit.converged and fit.iterations <= 12
+        seen += 1
+    assert seen > 30
+
+
 def test_oracle_lambda_formula():
     assert F.oracle_lambda(8, 0.3) == pytest.approx(12 / (0.09 * 63))
     assert F.oracle_lambda(12, 0.6) == pytest.approx(12 / (0.36 * 143))

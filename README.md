@@ -50,7 +50,7 @@ Alle Zahlen: 300 feste Turniere, 8 Teilnehmer, Stärkeabstand 0,3, wenn nicht an
 | Gegen das Modell ohne Annahme | Mit dem Orakel-λ schlägt Bradley-Terry das gesättigte Modell (je Paar eine Wahrscheinlichkeit) bei 1 bis 10 Partien je Paar in allen Zeilen, und log5 bei 4 Partien (Abstand 0,3). | `test_bradley_terry_beats_the_saturated_model_for_few_games` |
 | Standardfehler | Das 90-%-Intervall deckt die wahre Stärke in **89 bis 93 %** der Fälle ab (1 bis 40 Partien, λ = 0,1 und 1). Der Standardfehler fällt von 0,57 (1 Partie) auf 0,12 (40 Partien). | `test_the_ninety_percent_interval_covers_about_ninety_percent` |
 | Zyklen (Konter-Stil, c = 0,3) | Bradley-Terry verliert gegenüber der Wahrheit 0,010 nat je Partie bei 20 Partien je Paar und 0,004 bei 600; das gesättigte Modell 0,023 und 0,001. **Die Kreuzung liegt zwischen 60 und 200 Partien je Paar** (c = 0,3 und 0,6), zwischen 200 und 600 bei c = 0,15. | `test_the_unmodelled_cycles_cost_little_and_the_saturated_model_pays_off_late` |
-| Rechenaufwand (12 Teilnehmer, nur Turniere mit Schätzer) | Newton 13 bis 71 Schritte, Zermelo-Iteration 47 bis 1419: das 2,6- bis 29-Fache, wachsend mit dem Stärkeabstand. | `test_newton_needs_far_fewer_iterations_than_the_mm_iteration` |
+| Rechenaufwand (12 Teilnehmer, nur Turniere mit Schätzer) | Newton **5 bis 9,5 Schritte**, Zermelo-Iteration **47 bis 1419**: das 9- bis 150-Fache, wachsend mit dem Stärkeabstand (Abstand 0,1: 5 gegen 47 bis 53; Abstand 1,0: 9,5 gegen 1235 bis 1419). | `test_newton_needs_far_fewer_iterations_than_the_mm_iteration` |
 
 ## Befunde und Korrekturen gegenüber dem Plan
 
@@ -58,13 +58,16 @@ Alle Zahlen: 300 feste Turniere, 8 Teilnehmer, Stärkeabstand 0,3, wenn nicht an
   Likelihood im Standardfehler (in der Vorab-Messreihe 3,5 statt 1,1) und die Intervalle decken scheinbar 100 % ab. Die Demo projiziert, der Orakel-Test prüft gegen die Pseudoinverse.
 - **Frische Partien aus derselben Matrix:** Ein anderer Seed für die Testpartien erzeugte andere Stile und ließ das gesättigte Modell schlecht aussehen. Die
   Testpartien werden aus P des Trainingsturniers gezogen.
-- **Text falsch, vom Claims-Test gefunden:** Die App sagte zunächst, die Zermelo-Iteration brauche „hundert- bis tausendmal so viele“ Schritte. Gemessen ist es
-  das 2,6- bis 29-Fache; der Text lautet jetzt „das Drei- bis Dreißigfache“.
+- **Schrittzahl war Rauschen, von der Linux-CI gefunden:** Die erste Fassung zählte für Newton 13 bis 71 Schritte (Vorab-Messreihe 17 bis 59) und im App-Text
+  stand „hundert- bis tausendmal so viele“ für Zermelo; der Claims-Test maß das 2,6- bis 29-Fache und der Text wurde danach auf „Drei- bis Dreißigfache“
+  gesetzt. Auf Linux kam derselbe Test auf 18 statt 20 Schritte. Ursache: Bei λ = 10⁻⁸ verstärkt die Lösung des Newton-Systems Rundungsrauschen in der
+  Richtung „alle Stärken gleich“ mit 1/λ; der Mittelwert der Stärken driftete auf 2·10⁻⁷, und die Zahl der Schritte hing am Rauschen (Maximum 116). Der
+  exakte Schritt hat Mittelwert 0; mit zentriertem Schritt sind es 5 bis 9,5 Schritte, plattformstabil. Das Verhältnis zu Zermelo ist damit das 9- bis
+  150-Fache; der App-Text lautet „Zehn- bis Hundertfünfzigfache“. Die Orakel-Vergleiche der Lösung (scipy, MM-Iteration) waren auch vorher grün; der Mittelwert wird am Ende ohnehin auf 0 gesetzt.
 - **Verdikt unvollständig, vom Test gefunden:** Bei zwei Staffeln ohne Kreuzpartie nannte das Verdikt nur den Ungeschlagenen, nicht den zerfallenden Plan. Es
   nennt jetzt beides.
-- **Zahlen wichen im Rauschen ab:** Existenz bei 1 Partie 66 % statt 61 % der Vorab-Messreihe (andere feste Turniere), Newton 13 bis 71 statt 17 bis 59
-  Schritte (Schrittverkürzung, λ = 10⁻⁸). Das Zyklen-Experiment rechnet Bradley-Terry mit dem Orakel-λ statt mit λ = 0,1: ein fairerer Vergleich, kleinere Zahlen
-  bei wenigen Partien.
+- **Zahlen wichen im Rauschen ab:** Existenz bei 1 Partie 66 % statt 61 % der Vorab-Messreihe (andere feste Turniere). Das Zyklen-Experiment rechnet
+  Bradley-Terry mit dem Orakel-λ statt mit λ = 0,1: ein fairerer Vergleich, kleinere Zahlen bei wenigen Partien.
 - **Seed:** Der Standard-Seed 40 zeigt den Fall, in dem der Schätzer fehlt (B bleibt ungeschlagen); die Presets zeigen in den Mittelwerten über 80 Turniere, was
   ihre Beschreibung verspricht.
 
@@ -98,7 +101,7 @@ Alle Zahlen: 300 feste Turniere, 8 Teilnehmer, Stärkeabstand 0,3, wenn nicht an
 
 ## Tests
 
-93 Tests, rund 75 Sekunden: Einheiten gegen die von Hand gerechneten Mini-Instanzen (`test_fit.py`, `test_existence.py`, `test_heldout.py`,
+94 Tests, rund 75 Sekunden: Einheiten gegen die von Hand gerechneten Mini-Instanzen (`test_fit.py`, `test_existence.py`, `test_heldout.py`,
 `test_baselines.py`), Generator (`test_generator.py`, wortgleich mit der Wurzel), **Orakel** (`test_oracle_bradley_terry.py`: Newton gegen `scipy.optimize` auf
 der Partienliste, Newton gegen die Zermelo-Iteration, Existenz gegen `networkx` samt Divergenz bei verschwindender Vorannahme, Ordnung gegen die Siegtabelle,
 Standardfehler gegen die Pseudoinverse und die geschlossene Form, frische Partien gegen die Entropie), Presets, ausblendbare Regler

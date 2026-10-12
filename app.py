@@ -96,7 +96,7 @@ with st.expander("So schätzt man Stärken aus Paarvergleichen", expanded=True):
 1. **Das Modell:** P(i schlägt j) = σ(θ_i − θ_j) mit σ(x) = 1/(1 + e^(−x)). Nur Differenzen zählen; die Stärken werden auf Mittelwert 0 gesetzt.
    Ausgänge sind Sieg oder Niederlage, keine Punkte: Kantersiege können nichts verzerren, aber auch nichts nützen.
 2. **Die Schätzung:** Gesucht ist das θ, das die beobachteten Ausgänge am wahrscheinlichsten macht (Maximum Likelihood). Die Funktion ist konkav; das
-   **Newton-Verfahren** löst sie in wenigen Dutzend Schritten, die ältere Zermelo-Iteration braucht je nach Stärkeabstand das Drei- bis Dreißigfache.
+   **Newton-Verfahren** löst sie in fünf bis zehn Schritten, die ältere Zermelo-Iteration braucht je nach Stärkeabstand das Zehn- bis Hundertfünfzigfache.
 3. **Der Haken:** Hat jemand nie verloren, wäre seine Stärke unendlich; die Likelihood hat dann kein Maximum. Genau dann existiert der Schätzer, wenn
    der Graph „i → j, wenn i mindestens einmal gegen j gewann“ **stark zusammenhängend** ist (Ford-Bedingung).
 4. **Die Vorannahme λ:** Ein Zuschlag −(λ/2) · Σθ² hält die Stärken endlich: „die Stärken streuen um 0 mit Varianz 1/λ“. Wo die Daten entscheiden,
