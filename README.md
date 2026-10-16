@@ -1,5 +1,7 @@
 # Bradley-Terry: Siegwahrscheinlichkeit aus der Stärke – Streamlit-Demo
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-bradley-terry-demo.streamlit.app/)**
+
 Fünftes Stück der **Ranking-Linie** (Konzepte-Demo), Nachfolger von `siegtabelle-demo`, `rangdistanz-demo`, `rangaggregation-demo` und `massey-colley-demo`: Die
 Siegtabelle zählt, Massey und Colley lösen ein lineares System. Hier bekommt jeder Teilnehmer eine **Stärke**, und jede Partie wird mit der Wahrscheinlichkeit
 **σ(Stärke des einen minus Stärke des anderen)** entschieden: das **Bradley-Terry-Modell**. Das Vehikel ist das neutrale, simulierte Turnier der Wurzel
@@ -150,4 +152,4 @@ Gebaut mit Streamlit, Plotly, numpy, pandas und fpdf2.
 
 ---
 
-Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zu den Demos: [Interaktive Demos](https://sebastianhanisch.net/demos.html).
+Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zur Reihe: [Ranking: von der Siegtabelle bis Learning to Rank](https://sebastianhanisch.net/konzepte-ranking.html).
