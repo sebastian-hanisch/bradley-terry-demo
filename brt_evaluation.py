@@ -263,6 +263,9 @@ def verdict_analysis(a: Analysis) -> tuple[str, str]:
         if a.winless:
             who.append("ohne Sieg: " + ", ".join(names[i] for i in a.winless))
         reason = "; ".join(who) if who else f"der Gewinngraph hat {len(a.components)} Komponenten, ohne dass jemand ungeschlagen oder sieglos ist"
+        if s.plan == "vollstaendig":
+            return "warning", (f"Der Schätzer ohne Vorannahme **existiert hier nicht** ({reason}): Die Stärke liefe ins Unendliche. Die Ordnung ist die der Siegtabelle; "
+                               f"die Stärken und Wahrscheinlichkeiten kommen von der Vorannahme λ = {de(s.lam)}.")
         return "warning", (f"Der Schätzer ohne Vorannahme **existiert hier nicht** ({reason}): Die Stärke liefe ins Unendliche. Die gezeigte Ordnung kommt von "
                            f"der Vorannahme λ = {de(s.lam)}; ein anderes λ gäbe eine andere Ordnung, solange die Daten nichts entscheiden.")
     tau = a.tau_s
@@ -291,7 +294,7 @@ def verdict_staffeln(rows, lams=C.STAFFEL_LAMS) -> tuple[str, str]:
     r = next(r for r in rows if r["x"] == 1)
     lo, mid, hi = (r[bt_key(l)] for l in lams)
     return "warning", (f"Bei einer Kreuzpartie je Starkem sind {pct(r['Siege'])} % der Paare über die Staffeln falsch geordnet (Siegtabelle), {pct(r['Massey'])} % "
-                       f"(Massey), {pct(r['Colley'])} % (Colley). Bradley-Terry liegt dazwischen und **hängt an der Vorannahme**: {pct(lo)} % bei λ = {de(lams[0])}, "
+                       f"(Massey), {pct(r['Colley'])} % (Colley). Bradley-Terry liegt je nach Vorannahme etwa zwischen Massey und Siegtabelle (bei sehr kleinem λ knapp unter Massey) und **hängt an der Vorannahme**: {pct(lo)} % bei λ = {de(lams[0])}, "
                        f"{pct(mid)} % bei λ = {de(lams[1])}, {pct(hi)} % bei λ = {de(lams[2])}. Die Daten allein entscheiden hier nicht; λ ist das Ranking.")
 
 

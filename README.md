@@ -10,8 +10,9 @@ Siegtabelle zählt, Massey und Colley lösen ein lineares System. Hier bekommt j
 ## Kernfrage
 
 Was liefert ein Modell mit Stärken gegenüber der Tabelle und den linearen Systemen, und was kostet es? **Es ordnet nicht besser:** im vollständigen Plan ist die
-Ordnung die der Siegtabelle, bei Lücken liegt sie bei Colley und Massey. Es liefert **Wahrscheinlichkeiten und Intervalle**, und die Intervalle stimmen. Der
-Preis: **der Schätzer existiert oft nicht**, und wo er fehlt, **ist die Vorannahme das Ranking**.
+Ordnung die der Siegtabelle, bei Lücken liegt sie bei Colley und Massey; bei zwei Staffeln hängt sie an λ. Es liefert **Wahrscheinlichkeiten und Intervalle**, und die
+Intervalle stimmen im vollständigen, ausgeglichenen Plan ohne Zyklen (gemessen für λ = 0,1 und 1). Der Preis: **der Schätzer existiert oft nicht**, und wo er fehlt,
+bestimmt die Vorannahme die Stärken, bei unvollständigem Plan auch die Rangfolge.
 
 ## Modell
 
@@ -32,7 +33,8 @@ Preis: **der Schätzer existiert oft nicht**, und wo er fehlt, **ist die Voranna
 ## Methodik
 
 - **Experimente** über 300 feste Turniere (`SWEEP_SEEDS`, nie ein einzelner Seed), je mit einem live berechneten Verdikt; feste Instanzen unabhängig vom Regler
-  (8 Teilnehmer, in Experiment 2 zwölf). Experiment 5 (bis zu 600 Partien je Paar) über die ersten 100 dieser Turniere.
+  (8 Teilnehmer; zwölf in Experiment 2, in den Plan-Zeilen von Experiment 1 und im Rechenaufwand, sechzehn im Extremfall von Experiment 1). Experiment 5 (bis zu 600 Partien je Paar)
+  und der Rechenaufwand laufen über die ersten 100 dieser Turniere.
 - **Maße:** Anteil der Turniere mit existierendem Schätzer, falsch geordnete Paare über die Staffeln, Kendall-τ gegen die Generator-Stärke, Log-Verlust auf
   frischen Partien, Abdeckung des 90-%-Intervalls, Iterationen.
 - **Zufall:** `turnier_generator.py` mit SplitMix64-Strom (wortgleich mit `siegtabelle-demo`).
@@ -51,8 +53,8 @@ Alle Zahlen: 300 feste Turniere, 8 Teilnehmer, Stärkeabstand 0,3, wenn nicht an
 | Bestes λ | Bei Abstand 0,3 ist λ = 2 das beste des Rasters (Orakel 2,12), bei Abstand 0,6 λ = 0,5 (Orakel 0,53), für 1, 2, 4 und 10 Partien je Paar; das Orakel-λ liegt höchstens 0,005 über dem besten Rasterwert. | `test_the_best_prior_is_the_inverse_variance_of_the_true_strengths` |
 | Gegen das Modell ohne Annahme | Mit dem Orakel-λ schlägt Bradley-Terry das gesättigte Modell (je Paar eine Wahrscheinlichkeit) bei 1 bis 10 Partien je Paar in allen Zeilen, und log5 bei 4 Partien (Abstand 0,3). | `test_bradley_terry_beats_the_saturated_model_for_few_games` |
 | Standardfehler | Das 90-%-Intervall deckt die wahre Stärke in **89 bis 93 %** der Fälle ab (1 bis 40 Partien, λ = 0,1 und 1). Der Standardfehler fällt von 0,57 (1 Partie) auf 0,12 (40 Partien). | `test_the_ninety_percent_interval_covers_about_ninety_percent` |
-| Zyklen (Konter-Stil, c = 0,3) | Bradley-Terry verliert gegenüber der Wahrheit 0,010 nat je Partie bei 20 Partien je Paar und 0,004 bei 600; das gesättigte Modell 0,023 und 0,001. **Die Kreuzung liegt zwischen 60 und 200 Partien je Paar** (c = 0,3 und 0,6), zwischen 200 und 600 bei c = 0,15. | `test_the_unmodelled_cycles_cost_little_and_the_saturated_model_pays_off_late` |
-| Rechenaufwand (12 Teilnehmer, nur Turniere mit Schätzer) | Newton **5 bis 9,5 Schritte**, Zermelo-Iteration **47 bis 1419**: das 9- bis 150-Fache, wachsend mit dem Stärkeabstand (Abstand 0,1: 5 gegen 47 bis 53; Abstand 1,0: 9,5 gegen 1235 bis 1419). | `test_newton_needs_far_fewer_iterations_than_the_mm_iteration` |
+| Zyklen (Konter-Stil, c = 0,3) | Bradley-Terry verliert gegenüber der Wahrheit 0,010 nat je Partie bei 20 Partien je Paar und 0,004 bei 600; das gesättigte Modell 0,023 und 0,001. **Die Kreuzung liegt zwischen 60 und 200 Partien je Paar** (c = 0,3 und 0,6), um 200 bis 600 bei c = 0,15. | `test_the_unmodelled_cycles_cost_little_and_the_saturated_model_pays_off_late` |
+| Rechenaufwand (12 Teilnehmer, nur Turniere mit Schätzer; Mittel über die ersten 100 Turniere, gezählt in Schritten, nicht in Rechenzeit) | Newton **5 bis 9,5 Schritte**, Zermelo-Iteration **47 bis 1419**: das 9- bis 150-Fache, wachsend mit dem Stärkeabstand (Abstand 0,1: 5 gegen 47 bis 53; Abstand 1,0: 9,5 gegen 1235 bis 1419). | `test_newton_needs_far_fewer_iterations_than_the_mm_iteration` |
 
 ## Befunde und Korrekturen gegenüber dem Plan
 
@@ -65,7 +67,7 @@ Alle Zahlen: 300 feste Turniere, 8 Teilnehmer, Stärkeabstand 0,3, wenn nicht an
   gesetzt. Auf Linux kam derselbe Test auf 18 statt 20 Schritte. Ursache: Bei λ = 10⁻⁸ verstärkt die Lösung des Newton-Systems Rundungsrauschen in der
   Richtung „alle Stärken gleich“ mit 1/λ; der Mittelwert der Stärken driftete auf 2·10⁻⁷, und die Zahl der Schritte hing am Rauschen (Maximum 116). Der
   exakte Schritt hat Mittelwert 0; mit zentriertem Schritt sind es 5 bis 9,5 Schritte, plattformstabil. Das Verhältnis zu Zermelo ist damit das 9- bis
-  150-Fache; der App-Text lautet „Zehn- bis Hundertfünfzigfache“. Die Orakel-Vergleiche der Lösung (scipy, MM-Iteration) waren auch vorher grün; der Mittelwert wird am Ende ohnehin auf 0 gesetzt.
+  150-Fache; der App-Text lautet „Neun- bis Hundertfünfzigfache“. Die Orakel-Vergleiche der Lösung (scipy, MM-Iteration) waren auch vorher grün; der Mittelwert wird am Ende ohnehin auf 0 gesetzt.
 - **Verdikt unvollständig, vom Test gefunden:** Bei zwei Staffeln ohne Kreuzpartie nannte das Verdikt nur den Ungeschlagenen, nicht den zerfallenden Plan. Es
   nennt jetzt beides.
 - **Zahlen wichen im Rauschen ab:** Existenz bei 1 Partie 66 % statt 61 % der Vorab-Messreihe (andere feste Turniere). Das Zyklen-Experiment rechnet
@@ -83,7 +85,8 @@ Alle Zahlen: 300 feste Turniere, 8 Teilnehmer, Stärkeabstand 0,3, wenn nicht an
 
 ## Ehrliche Grenzen
 
-- **Kein Gewinn an Rangtreue** gegenüber Colley und der Siegtabelle; der Wert liegt in Wahrscheinlichkeit und Unsicherheit.
+- **Kein Gewinn an Rangtreue** im vollständigen Plan und bei Lücken gegenüber Colley und der Siegtabelle (bei Staffeln mit kleinem λ ordnet es besser als beide); der
+  Wert liegt in Wahrscheinlichkeit und Unsicherheit.
 - **λ ist eine Annahme:** bei Staffeln und wenigen Partien bestimmt sie das Ergebnis; das Orakel-λ gibt es nur in der Simulation.
 - **Stark stochastische Transitivität** steckt im Modell: Zyklen sind unsichtbar; der Verlust ist klein, aber die Rangfrage ist dann nicht mehr eindeutig.
 - **Unentschieden, Tore, Heimvorteil** fehlen: nur Sieg oder Niederlage.
@@ -103,7 +106,7 @@ Alle Zahlen: 300 feste Turniere, 8 Teilnehmer, Stärkeabstand 0,3, wenn nicht an
 
 ## Tests
 
-94 Tests, rund 75 Sekunden: Einheiten gegen die von Hand gerechneten Mini-Instanzen (`test_fit.py`, `test_existence.py`, `test_heldout.py`,
+111 Tests, rund 220 Sekunden: Einheiten gegen die von Hand gerechneten Mini-Instanzen (`test_fit.py`, `test_existence.py`, `test_heldout.py`,
 `test_baselines.py`), Generator (`test_generator.py`, wortgleich mit der Wurzel), **Orakel** (`test_oracle_bradley_terry.py`: Newton gegen `scipy.optimize` auf
 der Partienliste, Newton gegen die Zermelo-Iteration, Existenz gegen `networkx` samt Divergenz bei verschwindender Vorannahme, Ordnung gegen die Siegtabelle,
 Standardfehler gegen die Pseudoinverse und die geschlossene Form, frische Partien gegen die Entropie), Presets, ausblendbare Regler

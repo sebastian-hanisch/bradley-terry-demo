@@ -143,7 +143,7 @@ def test_the_unmodelled_cycles_cost_little_and_the_saturated_model_pays_off_late
 
 def test_newton_needs_far_fewer_iterations_than_the_mm_iteration(iterations):
     ratios = [r["mm"] / r["newton"] for r in iterations.values()]
-    assert min(ratios) == pytest.approx(9.4, abs=0.8) and max(ratios) == pytest.approx(150, abs=12)     # README: "das 9- bis 150-Fache"; App: "Zehn- bis Hundertfünfzigfache"
+    assert min(ratios) == pytest.approx(9.4, abs=0.8) and max(ratios) == pytest.approx(150, abs=12)     # README: "das 9- bis 150-Fache"; App: "Neun- bis Hundertfünfzigfache"
     assert iterations[(0.1, 4)]["newton"] == pytest.approx(5.1, abs=0.4) and iterations[(0.1, 4)]["mm"] == pytest.approx(53, abs=3)
     assert iterations[(1.0, 4)]["newton"] == pytest.approx(9.5, abs=0.5) and iterations[(1.0, 4)]["mm"] == pytest.approx(1419, abs=60)
     assert min(r["newton"] for r in iterations.values()) == pytest.approx(5.0, abs=0.4) and min(r["mm"] for r in iterations.values()) == pytest.approx(47, abs=3)

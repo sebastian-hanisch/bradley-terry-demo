@@ -84,7 +84,8 @@ st.markdown(
 Die Siegtabelle zählt, Massey und Colley lösen ein lineares System. Diese Demo ist das **fünfte Stück der Ranking-Linie** und fragt anders: Was wäre, wenn
 jeder Teilnehmer eine **Stärke** hätte und jede Partie mit der Wahrscheinlichkeit **σ(Stärke des einen minus Stärke des anderen)** entschieden würde? Das
 **Bradley-Terry-Modell** schätzt diese Stärken aus den Ausgängen. Es ordnet **nicht besser** als die Verfahren davor; es liefert **Wahrscheinlichkeiten und
-Intervalle**, und es hat einen Preis: **Der Schätzer existiert oft nicht**, und wo er fehlt, ist die Vorannahme das Ranking.
+Intervalle**, und es hat einen Preis: **Der Schätzer existiert oft nicht**, und wo er fehlt, bestimmt die Vorannahme die Stärken, bei unvollständigem Plan auch die
+Rangfolge.
 
 Weiter unten: fünf **🔬 Experimente** mit Verdikt, **🚧 Wo die Annahmen enden** und der Expander **📐 Mathematische Formulierung**.
 """
@@ -96,11 +97,11 @@ with st.expander("So schätzt man Stärken aus Paarvergleichen", expanded=True):
 1. **Das Modell:** P(i schlägt j) = σ(θ_i − θ_j) mit σ(x) = 1/(1 + e^(−x)). Nur Differenzen zählen; die Stärken werden auf Mittelwert 0 gesetzt.
    Ausgänge sind Sieg oder Niederlage, keine Punkte: Kantersiege können nichts verzerren, aber auch nichts nützen.
 2. **Die Schätzung:** Gesucht ist das θ, das die beobachteten Ausgänge am wahrscheinlichsten macht (Maximum Likelihood). Die Funktion ist konkav; das
-   **Newton-Verfahren** löst sie in fünf bis zehn Schritten, die ältere Zermelo-Iteration braucht je nach Stärkeabstand das Zehn- bis Hundertfünfzigfache.
+   **Newton-Verfahren** löst sie im Mittel in fünf bis zehn Schritten, die ältere Zermelo-Iteration braucht je nach Stärkeabstand das Neun- bis Hundertfünfzigfache.
 3. **Der Haken:** Hat jemand nie verloren, wäre seine Stärke unendlich; die Likelihood hat dann kein Maximum. Genau dann existiert der Schätzer, wenn
    der Graph „i → j, wenn i mindestens einmal gegen j gewann“ **stark zusammenhängend** ist (Ford-Bedingung).
 4. **Die Vorannahme λ:** Ein Zuschlag −(λ/2) · Σθ² hält die Stärken endlich: „die Stärken streuen um 0 mit Varianz 1/λ“. Wo die Daten entscheiden,
-   ist λ fast ohne Wirkung; wo nicht, bestimmt λ die Ordnung.
+   ist λ fast ohne Wirkung; wo nicht, bestimmt λ die Stärken und, bei unvollständigem Plan, die Ordnung.
         """
     )
 
@@ -280,7 +281,7 @@ st.markdown(
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
 | **Der Schätzer existiert** (Gewinngraph stark zusammenhängend) | Ein Ungeschlagener oder ein zerfallender Plan macht die Stärke unendlich bzw. unbestimmt; nur die Vorannahme λ liefert dann eine Ordnung (Experimente 1 und 2). | Rangintervalle und Shrinkage |
-| **Die Vorannahme λ passt zur Streuung** | Zu klein: die Stärken laufen auseinander und die Vorhersage ist schlechter als ein Münzwurf; zu groß: alles nahe 0, die Ordnung ist die der Siegtabelle (Experiment 3). Das Orakel-λ kennt nur die Simulation. | Rangintervalle und Shrinkage |
+| **Die Vorannahme λ passt zur Streuung** | Zu klein: die Stärken laufen auseinander, und bei wenigen Partien je Paar ist die Vorhersage schlechter als ein Münzwurf; zu groß: alle Stärken nahe 0 (im vollständigen Plan bleibt die Ordnung die der Siegtabelle; Experiment 3). Das Orakel-λ kennt nur die Simulation. | Rangintervalle und Shrinkage |
 | **Die Leistung hängt nur von der Stärke ab** (keine Zyklen) | Zyklen sind für das Modell unsichtbar; der Verlust ist klein, aber die Rangfrage ist dann nicht mehr eindeutig (Experiment 5). | Nicht-Transitivität |
 | **Ein Spiel ist Sieg oder Niederlage** | Remis, Tore und Heimvorteil haben ein eigenes Modell; hier gäbe es nur 0 oder 1. | Tore, Remis, Heimvorteil |
 | **Die Stärke ist konstant, die Partien sind unabhängig** | Verändert sich die Stärke über die Zeit, folgt ihr nur ein fortlaufendes Verfahren. | Elo |
@@ -299,7 +300,7 @@ $G = W + W^{\top}$ die Zahl der Partien je Paar. Die Stärken sind nur bis auf e
 
 **Log-Likelihood.** $\ell(\theta) = \sum_{i \ne j} W_{ij} \log \sigma(\theta_i - \theta_j)$. Gradient: $\partial \ell / \partial \theta_i = w_i - \sum_j G_{ij}\,
 \sigma(\theta_i - \theta_j)$ mit den Siegen $w_i$. Die Hesse-Matrix ist $-(\mathrm{diag}(V\mathbf{1}) - V)$ mit $V_{ij} = G_{ij}\,\sigma_{ij}(1 - \sigma_{ij})$,
-negativ semidefinit, ihr Kern ist der Einsvektor.
+negativ semidefinit, ihr Kern ist bei zusammenhängendem Spielplan der Einsvektor.
 
 **Existenz (Zermelo 1929, Ford 1957).** Der Maximierer ist endlich genau dann, wenn der Gewinngraph ($i \to j$, wenn $W_{ij} > 0$) stark zusammenhängend
 ist; äquivalent: in jeder Zerlegung der Teilnehmer in zwei nichtleere Gruppen hat jemand aus der ersten gegen jemanden aus der zweiten gewonnen.

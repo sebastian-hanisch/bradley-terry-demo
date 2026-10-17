@@ -62,11 +62,12 @@ def test_a_tournament_with_an_undefeated_player_is_flagged_and_named():
     assert not a.ford and a.undefeated == (a.turnier.names.index("B"),) and a.winless == ()
     level, text = ev.verdict_analysis(a)
     assert level == "warning" and "existiert hier nicht" in text and "ungeschlagen: B" in text
+    assert "Ordnung ist die der Siegtabelle" in text and "andere Ordnung" not in text          # vollständiger Plan: λ verschiebt die Ordnung nicht
 
 
 def test_verdict_cases():
     level, text = ev.verdict_analysis(ev.analyse(Settings(n=12, plan="staffeln", x=0, seed=3)))
-    assert level == "warning" and "zerfällt" in text and "existiert hier nicht" in text
+    assert level == "warning" and "zerfällt" in text and "existiert hier nicht" in text and "andere Ordnung" in text
     a = ev.analyse(Settings(n=8, k=10, plan="vollstaendig", lam=1.0, seed=3))
     level, text = ev.verdict_analysis(a)
     assert level == "info" and "ordnet Bradley-Terry wie die Siegtabelle" in text

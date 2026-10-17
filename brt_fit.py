@@ -50,7 +50,7 @@ def gradient(theta, W, lam: float = 0.0) -> np.ndarray:
 
 
 def fisher_information(theta, W) -> np.ndarray:
-    """Beobachtete Information der Likelihood (ohne Penalty): diag(V 1) − V mit V_ij = G_ij σ_ij (1 − σ_ij). Positiv semidefinit, Kern = Einsvektor."""
+    """Beobachtete Information der Likelihood (ohne Penalty): diag(V 1) − V mit V_ij = G_ij σ_ij (1 − σ_ij). Positiv semidefinit, Kern = Einsvektor (bei zusammenhängendem Plan)."""
     th = np.asarray(theta, dtype=float)
     W = _prepared(W)
     G = W + W.T
